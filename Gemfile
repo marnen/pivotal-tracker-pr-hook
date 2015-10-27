@@ -5,10 +5,13 @@ ruby '2.1.5'
 gem 'sinatra'
 gem 'json'
 
-group :development do
-  gem 'faker'
+group :development, :test do
   gem 'guard-rspec', require: false
-  gem 'rack-test'
   gem 'rspec'
+end
+
+group :test do
+  gem 'faker'
+  gem 'rack-test'
   gem 'webmock'
 end
