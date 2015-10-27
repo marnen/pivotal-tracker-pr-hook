@@ -8,8 +8,9 @@ post '/hook' do
   payload_body = request.body.read
   verify_signature(payload_body)
   payload = JSON.parse(payload_body)
-  puts "Action: #{payload['action']}"
-  if ['opened', 'reopened'].include? payload['action']
+  action = payload['action']
+  puts "Action: #{action}"
+  if ['opened', 'reopened'].include? action
     pull_request = PullRequest.new payload['pull_request']
     PivotalTracker.new(pull_request.to_commit).post!
   end
