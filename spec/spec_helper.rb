@@ -1,5 +1,6 @@
 require 'rack/test'
 require 'rspec'
+require 'webmock/rspec'
 
 require File.expand_path '../hook.rb', __FILE__
 
