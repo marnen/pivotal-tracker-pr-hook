@@ -1,6 +1,7 @@
 require 'sinatra'
 require 'json'
 require_relative 'models/pivotal_tracker'
+require_relative 'models/pull_request'
 
 post '/hook' do
   request.body.rewind
@@ -9,16 +10,8 @@ post '/hook' do
   payload = JSON.parse(payload_body)
   puts "Action: #{payload['action']}"
   if ['opened', 'reopened'].include? payload['action']
-    pull_request = payload['pull_request']
-    title = pull_request['title']
-    commit_id = "pulls/#{pull_request['number']}"
-    message = "Created pull request: #{title}"
-    author = pull_request['user']['login']
-    url = pull_request['html_url']
-    post_data = {source_commit: {
-      commit_id: commit_id, message: message, author: author, url: url
-    }}
-    PivotalTracker.new(post_data).post!
+    pull_request = PullRequest.new payload['pull_request']
+    PivotalTracker.new(pull_request.to_commit).post!
   end
 end
 
