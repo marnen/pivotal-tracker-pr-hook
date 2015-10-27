@@ -1,5 +1,6 @@
 require 'rack/test'
 require 'rspec'
+require 'faker'
 require 'webmock/rspec'
 
 require File.expand_path '../../hook', __FILE__

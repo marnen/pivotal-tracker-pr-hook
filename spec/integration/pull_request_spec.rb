@@ -1,5 +1,4 @@
 require File.expand_path '../../spec_helper', __FILE__
-require 'faker'
 
 def a_request_including(hash)
   a_tracker_request.with do |request|
@@ -13,11 +12,6 @@ describe 'webhook' do
     let(:tracker_endpoint) { 'https://www.pivotaltracker.com/services/v5/source_commits' }
 
     shared_examples 'opened or reopened' do
-      before(:each) do
-        expect_any_instance_of(app).to receive(:verify_signature).and_return true
-        post!
-      end
-
       let(:html_url) { Faker::Internet.url }
       let(:login) { Faker::Internet.user_name }
       let(:params) { {action: action, pull_request: pull_request} }
@@ -32,6 +26,11 @@ describe 'webhook' do
         }
       end
       let(:title) { Faker::Lorem.sentence }
+
+      before(:each) do
+        expect_any_instance_of(app).to receive(:verify_signature).and_return true
+        post!
+      end
 
       it 'posts the pull request number to Pivotal Tracker as the commit ID' do
         expect(a_request_including 'commit_id' => "pulls/#{pull_number}").to have_been_made
