@@ -8,7 +8,7 @@ This is a GitHub webhook that will make story comments on Pivotal Tracker when p
 2. Host it somewhere. [Heroku](http://www.heroku.com) should be fine.
 3. Set it up as a GitHub [webhook](https://developer.github.com/webhooks/creating/), with the URL of http://[my-awesome-webhost.com]/hook. Set "pull request" as the event type. Enter a random string in the "secret" field.
 4. On the server, set the following environment variables:
-  * `PIVOTAL_TRACKER_API_TOKEN`: your Pivotal Tracker API token
+  * `PIVOTAL_TRACKER_API_TOKEN`: your Pivotal Tracker API token.
   * `SECRET_TOKEN`: the random string you entered in the "secret" field in step 3.
 
 ## Usage
