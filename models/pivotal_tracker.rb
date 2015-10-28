@@ -38,7 +38,7 @@ class PivotalTracker
 
   class << self
     def start_tracker_session(&block)
-        Net::HTTP::start BASE_URL.host, BASE_URL.port, use_ssl: BASE_URL.scheme == 'https', &block
+      Net::HTTP::start BASE_URL.host, BASE_URL.port, use_ssl: BASE_URL.scheme == 'https', &block
     end
 
     def headers
