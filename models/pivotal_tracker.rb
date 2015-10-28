@@ -14,17 +14,23 @@ class PivotalTracker
     end
   end
 
-  def initialize(post_data)
-    @post_data = post_data
+  def initialize(pull_request)
+    @pull_request = pull_request
   end
 
   def post!
-    puts "Sending to Pivotal Tracker: #{@post_data.inspect}"
+    puts "Sending to Pivotal Tracker: #{@pull_request.title}"
+    story_paths = @pull_request.story_ids.collect do |story_id|
+      project_id = self.class.story(story_id)['project_id']
+      project_id ? "/projects/#{project_id}/stories/#{story_id}" : nil
+    end.compact
 
-    post_request = Net::HTTP::Post.new TRACKER_URL.path, self.class.headers
-    post_request.body = @post_data.to_json
-    Net::HTTP::start TRACKER_URL.host, TRACKER_URL.port, use_ssl: TRACKER_URL.scheme == 'https' do |http|
-      http.request post_request
+    Net::HTTP::start BASE_URL.host, BASE_URL.port, use_ssl: BASE_URL.scheme == 'https' do |http|
+      story_paths.each do |story_path|
+        post_comment = Net::HTTP::Post.new "#{BASE_URL.path}/#{story_path}/comments".squeeze('/'), self.class.headers
+        post_comment.body = @pull_request.to_comment.to_json
+        http.request post_comment
+      end
     end
   end
 

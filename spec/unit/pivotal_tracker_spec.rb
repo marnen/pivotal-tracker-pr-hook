@@ -3,13 +3,14 @@ require_relative '../../models/pivotal_tracker'
 
 describe PivotalTracker do
   describe 'constructor' do
-    it 'takes a hash' do
-      expect(PivotalTracker.new a: 1).to be_a_kind_of PivotalTracker
+    it 'takes a pull request' do
+      expect(PivotalTracker.new PullRequest.new {}).to be_a_kind_of PivotalTracker
     end
   end
 
   context 'requests' do
     let(:api_token) { ENV['PIVOTAL_TRACKER_API_TOKEN'] }
+    let(:standard_headers) { {'Content-Type' => 'application/json', 'X-TrackerToken' => api_token} }
 
     describe '.story' do
       let(:request!) { PivotalTracker.story story_id }
@@ -24,7 +25,7 @@ describe PivotalTracker do
 
       it 'uses standard headers in the request' do
         request!
-        expect(story_request.with headers: {'Content-Type' => 'application/json', 'X-TrackerToken' => api_token}).to have_been_made
+        expect(story_request.with headers: standard_headers).to have_been_made
       end
 
       it 'returns the response body parsed as JSON' do
@@ -34,24 +35,24 @@ describe PivotalTracker do
     end
 
     describe '#post!' do
-      let(:data) { Hash[*(1..3).collect { [Faker::Lorem.words(1), Faker::Lorem.sentence] }.flatten] }
-      let(:post!) { PivotalTracker.new(data).post! }
-      let!(:tracker_request) { stub_request :post, tracker_endpoint }
-      let(:tracker_endpoint) { PivotalTracker::TRACKER_URL }
+      it 'posts the pull request as a comment to each of its stories' do
+        title = Faker::Lorem.sentence
+        pull_request = PullRequest.new title: title
+        story_ids = (1..3).collect { rand(1000).to_s }
+        project_ids = story_ids.zip (1..3).collect { rand(1000).to_s }
+        project_ids.each do |story_id, project_id|
+          stub_request(:get, URI.join(PivotalTracker::BASE_URL, "/stories/#{story_id}")).to_return body: {project_id: project_id}.to_json
+        end
+        allow(pull_request).to receive(:story_ids).and_return story_ids
+        comment = {text: Faker::Lorem.sentence}
+        allow(pull_request).to receive(:to_comment).and_return comment
 
-      it "posts the object's data to Pivotal Tracker as JSON" do
-        post!
-        expect(tracker_request.with body: data.to_json).to have_been_requested
-      end
+        post_requests = project_ids.collect do |story_id, project_id|
+          stub_request(:post,  "#{PivotalTracker::BASE_URL}projects/#{project_id}/stories/#{story_id}/comments").with body: comment.to_json, headers: standard_headers
+        end
 
-      it "sets the request's content type to JSON" do
-        post!
-        expect(tracker_request.with headers: {'Content-Type' => 'application/json'}).to have_been_requested
-      end
-
-      it 'sends the Pivotal Tracker API token from the environment' do
-        post!
-        expect(tracker_request.with headers: {'X-TrackerToken' => api_token}).to have_been_requested
+        PivotalTracker.new(pull_request).post!
+        expect(post_requests).to all have_been_made
       end
     end
   end
