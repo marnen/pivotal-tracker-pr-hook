@@ -1,6 +1,13 @@
 require 'ostruct'
 
 class PullRequest < OpenStruct
+  def story_ids
+    title.scan(%r{\[.*?\]}).collect do |brackets|
+      brackets.scan %r{#(\d+)}
+    end.flatten
+  end
+
+
   def to_commit
     {
       source_commit: {
