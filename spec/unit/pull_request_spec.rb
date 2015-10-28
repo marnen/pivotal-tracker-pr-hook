@@ -8,7 +8,33 @@ describe PullRequest do
     end
   end
 
-  describe '.to_commit' do
+  describe '#to_comment' do
+    let(:data) do
+      {
+        'html_url' => html_url,
+        'number' => number,
+        'title' => title,
+        'user' => {'login' => login}
+      }
+    end
+    let(:html_url) { Faker::Internet.url }
+    let(:login) { Faker::Internet.user_name }
+    let(:number) { rand 1..1000 }
+    let(:pull_request) { PullRequest.new data }
+    let(:title) { Faker::Lorem.sentence }
+
+    subject { pull_request.to_comment }
+
+    it 'converts the pull request data to a string' do
+      expect(subject[:text]).to be == "#{login} created pull request [##{number}: #{title}](#{html_url})"
+    end
+
+    it 'identifies the comment as coming from GitHub' do
+      expect(subject[:commit_type]).to be == 'github'
+    end
+  end
+
+  describe '#to_commit' do
     let(:data) do
       {
         'html_url' => html_url,
