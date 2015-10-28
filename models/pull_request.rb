@@ -9,9 +9,6 @@ class PullRequest < OpenStruct
 
 
   def to_comment
-    {
-      commit_type: 'github',
-      text: "#{user['login']} created pull request [##{number}: #{title}](#{html_url})"
-    }
+    {text: "#{user['login']} created pull request [##{number}: #{title}](#{html_url})"}
   end
 end

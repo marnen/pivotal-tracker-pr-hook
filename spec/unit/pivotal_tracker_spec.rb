@@ -15,7 +15,7 @@ describe PivotalTracker do
     describe '.story' do
       let(:request!) { PivotalTracker.story story_id }
       let(:story_id) { rand 1_000_000..1_000_000_000 }
-      let!(:story_request) { stub_request :get, URI.join(PivotalTracker::BASE_URL, "/stories/#{story_id}") }
+      let!(:story_request) { stub_request :get,  "#{PivotalTracker::BASE_URL}stories/#{story_id}" }
 
 
       it 'requests the Tracker data for the given story ID' do
@@ -41,7 +41,7 @@ describe PivotalTracker do
         story_ids = (1..3).collect { rand(1000).to_s }
         project_ids = story_ids.zip (1..3).collect { rand(1000).to_s }
         project_ids.each do |story_id, project_id|
-          stub_request(:get, URI.join(PivotalTracker::BASE_URL, "/stories/#{story_id}")).to_return body: {project_id: project_id}.to_json
+          stub_request(:get, "#{PivotalTracker::BASE_URL}stories/#{story_id}").to_return body: {project_id: project_id}.to_json
         end
         allow(pull_request).to receive(:story_ids).and_return story_ids
         comment = {text: Faker::Lorem.sentence}

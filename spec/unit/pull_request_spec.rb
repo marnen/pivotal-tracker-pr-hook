@@ -79,10 +79,6 @@ describe PullRequest do
     it 'converts the pull request data to a string' do
       expect(subject[:text]).to be == "#{login} created pull request [##{number}: #{title}](#{html_url})"
     end
-
-    it 'identifies the comment as coming from GitHub' do
-      expect(subject[:commit_type]).to be == 'github'
-    end
   end
 end
 
