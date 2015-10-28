@@ -8,17 +8,6 @@ class PullRequest < OpenStruct
   end
 
 
-  def to_commit
-    {
-      source_commit: {
-        author: user['login'],
-        commit_id: "pulls/#{number}",
-        message: "Created pull request: #{title}",
-        url: html_url
-      }
-    }
-  end
-
   def to_comment
     {
       commit_type: 'github',
