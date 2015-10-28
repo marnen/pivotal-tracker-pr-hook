@@ -1,15 +1,14 @@
 require File.expand_path '../../spec_helper', __FILE__
 
-def a_request_including(hash)
-  a_tracker_request.with do |request|
-    expect(JSON.parse(request.body)['source_commit']).to include hash
+def stub_json_request(method, url, with: {})
+  stub_request(method, url).with do |request|
+    expect(JSON.parse request.body).to include with
   end
 end
 
 describe 'webhook' do
   describe 'action' do
-    let(:a_tracker_request) { a_request :post, tracker_endpoint }
-    let(:tracker_endpoint) { 'https://www.pivotaltracker.com/services/v5/source_commits' }
+    let(:tracker_base_url) { 'https://www.pivotaltracker.com/services/v5/' }
 
     shared_examples 'opened or reopened' do
       let(:html_url) { Faker::Internet.url }
@@ -25,27 +24,18 @@ describe 'webhook' do
           user: {login: login}
         }
       end
-      let(:title) { Faker::Lorem.sentence }
+      let(:story_id) { rand 1..10000 }
+      let(:title) { "[##{story_id}] #{Faker::Lorem.sentence}" }
 
       before(:each) do
         expect_any_instance_of(app).to receive(:verify_signature).and_return true
+        allow(PivotalTracker).to receive(:story).and_return 'project_id' => rand(1..10000)
+      end
+
+      it 'posts the pull request title to Pivotal Tracker as a comment message' do
+        request = stub_json_request :post, %r{^#{Regexp.escape tracker_base_url}projects/\d+/stories/\d+/comments$}, with: {'text' => "#{login} created pull request [##{pull_number}: #{title}](#{html_url})"}
         post!
-      end
-
-      it 'posts the pull request number to Pivotal Tracker as the commit ID' do
-        expect(a_request_including 'commit_id' => "pulls/#{pull_number}").to have_been_made
-      end
-
-      it 'posts the pull request title to Pivotal Tracker as the commit message' do
-        expect(a_request_including 'message' => "Created pull request: #{title}").to have_been_made
-      end
-
-      it 'posts the user ID to Pivotal Tracker as the author' do
-        expect(a_request_including 'author' => login).to have_been_made
-      end
-
-      it 'post the URL to Pivotal Tracker' do
-        expect(a_request_including 'url' => html_url).to have_been_made
+        expect(request).to have_been_made
       end
     end
 

@@ -12,7 +12,7 @@ post '/hook' do
   puts "Action: #{action}"
   if ['opened', 'reopened'].include? action
     pull_request = PullRequest.new payload['pull_request']
-    PivotalTracker.new(pull_request.to_commit).post!
+    PivotalTracker.new(pull_request).post!
   end
 end
 
