@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.org/marnen/pivotal-tracker-pr-hook.svg?branch=master)](https://travis-ci.org/marnen/pivotal-tracker-pr-hook)
+
 # pivotal-tracker-pr-hook
 
 This is a GitHub webhook that will make story comments on Pivotal Tracker when pull requests are opened (or reopened) on GitHub.
