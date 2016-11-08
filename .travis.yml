@@ -5,6 +5,5 @@ rvm:
 # - jruby
 # - rbx-2
 env:
- - PIVOTAL_TRACKER_API_TOKEN=dummy_api_token
- - SECRET_TOKEN=s3kr1t
+ - PIVOTAL_TRACKER_API_TOKEN=dummy_api_token SECRET_TOKEN=s3kr1t
 script: bundle exec rspec
