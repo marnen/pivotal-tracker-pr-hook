@@ -2,6 +2,7 @@ GEM
   remote: https://rubygems.org/
   specs:
     addressable (2.3.8)
+    byebug (8.2.4)
     coderay (1.1.0)
     crack (0.4.2)
       safe_yaml (~> 1.0.0)
@@ -77,6 +78,7 @@ PLATFORMS
   ruby
 
 DEPENDENCIES
+  byebug
   faker
   guard-rspec
   json
@@ -85,5 +87,8 @@ DEPENDENCIES
   sinatra
   webmock
 
+RUBY VERSION
+   ruby 2.1.5p273
+
 BUNDLED WITH
-   1.10.6
+   1.13.6

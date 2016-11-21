@@ -6,6 +6,7 @@ gem 'sinatra'
 gem 'json'
 
 group :development, :test do
+  gem 'byebug'
   gem 'guard-rspec', require: false
   gem 'rspec'
 end
