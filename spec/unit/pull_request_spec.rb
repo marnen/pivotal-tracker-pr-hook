@@ -65,7 +65,8 @@ describe PullRequest do
         'html_url' => html_url,
         'number' => number,
         'title' => title,
-        'user' => {'login' => login}
+        'user' => {'login' => login},
+        'base' => {'label' => base_label}
       }
     end
     let(:html_url) { Faker::Internet.url }
@@ -73,11 +74,12 @@ describe PullRequest do
     let(:number) { rand 1..1000 }
     let(:pull_request) { PullRequest.new data }
     let(:title) { Faker::Lorem.sentence }
+    let(:base_label) { Faker::Hacker.abbreviation }
 
     subject { pull_request.to_comment }
 
     it 'converts the pull request data to a string' do
-      expect(subject[:text]).to be == "#{login} created pull request [##{number}: #{title}](#{html_url})"
+      expect(subject[:text]).to be == "#{login} created pull request [##{number}: #{title}](#{html_url}) to #{base_label} "
     end
   end
 end

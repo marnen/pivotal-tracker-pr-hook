@@ -21,11 +21,13 @@ describe 'webhook' do
           html_url: html_url,
           number: pull_number,
           title: title,
-          user: {login: login}
+          user: {login: login},
+          base: {label: base_label}          
         }
       end
       let(:story_id) { rand 1..10000 }
       let(:title) { "[##{story_id}] #{Faker::Lorem.sentence}" }
+      let(:base_label) { Faker::Hacker.abbreviation }
 
       before(:each) do
         expect_any_instance_of(app).to receive(:verify_signature).and_return true
@@ -33,7 +35,7 @@ describe 'webhook' do
       end
 
       it 'posts the pull request title to Pivotal Tracker as a comment message' do
-        request = stub_json_request :post, %r{^#{Regexp.escape tracker_base_url}projects/\d+/stories/\d+/comments$}, with: {'text' => "#{login} created pull request [##{pull_number}: #{title}](#{html_url})"}
+        request = stub_json_request :post, %r{^#{Regexp.escape tracker_base_url}projects/\d+/stories/\d+/comments$}, with: {'text' => "#{login} created pull request [##{pull_number}: #{title}](#{html_url}) to #{base_label} "}
         post!
         expect(request).to have_been_made
       end
